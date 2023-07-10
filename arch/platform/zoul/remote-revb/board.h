@@ -409,6 +409,33 @@
 #define CC1200_RESET_PORT           GPIO_C_NUM
 #define CC1200_RESET_PIN            7
 #define CC1200_GPIOx_VECTOR         GPIO_B_IRQn
+
+/*---------------------------------------------------------------------------*/
+/**
+ * \name CC1120 configuration \charlie
+ *
+ * These values configure the required pins to drive the CC1200
+ * None of the following pins are exposed to any connector, kept for internal
+ * use only
+ * @{
+ */
+#define CC1120_SPI_INSTANCE         0
+#define CC1120_SPI_SCLK_PORT        SPI0_CLK_PORT
+#define CC1120_SPI_SCLK_PIN         SPI0_CLK_PIN
+#define CC1120_SPI_MOSI_PORT        SPI0_TX_PORT
+#define CC1120_SPI_MOSI_PIN         SPI0_TX_PIN
+#define CC1120_SPI_MISO_PORT        SPI0_RX_PORT
+#define CC1120_SPI_MISO_PIN         SPI0_RX_PIN
+#define CC1120_SPI_CSN_PORT         GPIO_B_NUM
+#define CC1120_SPI_CSN_PIN          5
+#define CC1120_GDO0_PORT            GPIO_B_NUM
+#define CC1120_GDO0_PIN             4
+#define CC1120_GDO2_PORT            GPIO_B_NUM
+#define CC1120_GDO2_PIN             0
+#define CC1120_RESET_PORT           GPIO_C_NUM
+#define CC1120_RESET_PIN            7
+#define CC1120_GPIOx_VECTOR         GPIO_B_IRQn
+
 /** @} */
 /*---------------------------------------------------------------------------*/
 /**

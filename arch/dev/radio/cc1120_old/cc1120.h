@@ -12,8 +12,8 @@
 #include "net/netstack.h"
 
 //Charlie:
-#include "dev/watchdog.h"
-#include "sys/energest.h"
+//#include "dev/watchdog.h"
+//#include "sys/energest.h"
 
 /* CC1120 headers. */
 #include "cc1120-const.h"

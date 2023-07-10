@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "cc1120.h": "c",
+        "spi-legacy.h": "c",
+        "packetbuf.h": "c",
+        "ioc.h": "c",
+        "contiki.h": "c",
+        "cc1120-rf-cfg.h": "c"
+    }
+}
