@@ -47,21 +47,21 @@
  */
 
 /* Base frequency in kHz */
-#define RF_CFG_CHAN_CENTER_F0           863125
+#define RF_CFG_CHAN_CENTER_F0           868000
 /* Channel spacing in Hz */
 #define RF_CFG_CHAN_SPACING             200000
 /* The minimum channel */
 #define RF_CFG_MIN_CHANNEL              0
 /* The maximum channel */
-#define RF_CFG_MAX_CHANNEL              33
+#define RF_CFG_MAX_CHANNEL              49  //49
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1120_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
-#define RF_CFG_CCA_THRESHOLD            (-91)
+#define RF_CFG_CCA_THRESHOLD            (-100)  //-100
 /* The RSSI offset in dBm */
-#define RF_CFG_RSSI_OFFSET              (-81)
+#define RF_CFG_RSSI_OFFSET              (-102)  //-102
 /*---------------------------------------------------------------------------*/
-static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1";
+static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1 CHARLIE";
 /*---------------------------------------------------------------------------*/
 
 /* 1 byte time: 160 usec */
@@ -128,73 +128,54 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
 // Bit rate = 50
 // RX filter BW = 104.166667
 
-static const registerSetting_t preferredSettings[]=
+static const registerSetting_t preferredSettings[]= 
 {
+  {CC1120_IOCFG3,            0xB0},
   {CC1120_IOCFG2,            0x06},
-  {CC1120_SYNC3,             0x6E},
-  {CC1120_SYNC2,             0x4E},
-  {CC1120_SYNC1,             0x90},
-  {CC1120_SYNC0,             0x4E},
-  {CC1120_SYNC_CFG1,         0xE5},
-  {CC1120_SYNC_CFG0,         0x23},
-  {CC1120_DEVIATION_M,       0x47},
-  {CC1120_MODCFG_DEV_E,      0x0B},
-  {CC1120_DCFILT_CFG,        0x56},
-
-  /*
-   * 18.1.1.1 Preamble field
-   *  The Preamble field shall contain phyFSKPreambleLength (as defined in 9.3)
-   *  multiples of the 8-bit sequence “01010101” for filtered 2FSK.
-   *  The Preamble field shall contain phyFSKPreambleLength multiples of the
-   *  16-bit sequence “0111 0111 0111 0111” for filtered 4FSK.
-   *
-   * We need to define this in order to be able to compute e.g. timeouts for the
-   * MAC layer. According to 9.3, phyFSKPreambleLength can be configured between
-   * 4 and 1000. We set it to 4. Attention: Once we use a long wake-up preamble,
-   * the timing parameters have to change accordingly. Will we use a shorter
-   * preamble for an ACK in this case???
-   */
-  {CC1120_PREAMBLE_CFG1,     0x19},
-
-  {CC1120_PREAMBLE_CFG0,     0xBA},
-  {CC1120_IQIC,              0xC8},
-  {CC1120_CHAN_BW,           0x84},
-  {CC1120_MDMCFG1,           0x42},
+  {CC1120_IOCFG1,            0xB0},
+  {CC1120_IOCFG0,            0x40},
+  {CC1120_SYNC3,             0x55},
+  {CC1120_SYNC2,             0x55},
+  {CC1120_SYNC1,             0x7A},
+  {CC1120_SYNC0,             0x0E},
+  {CC1120_SYNC_CFG1,         0x08},
+  {CC1120_SYNC_CFG0,         0x0B},
+  {CC1120_DEVIATION_M,       0x99},
+  {CC1120_MODCFG_DEV_E,      0x0D},
+  {CC1120_DCFILT_CFG,        0x15},
+  {CC1120_PREAMBLE_CFG1,     0x18},
+  {CC1120_FREQ_IF_CFG,       0x3A},
+  {CC1120_IQIC,              0x00},
+  {CC1120_CHAN_BW,           0x02},
   {CC1120_MDMCFG0,           0x05},
-  {CC1120_SYMBOL_RATE2,      0x94},
-  {CC1120_SYMBOL_RATE1,      0x7A},
-  {CC1120_SYMBOL_RATE0,      0xE1},
-  {CC1120_AGC_REF,           0x27},
-  {CC1120_AGC_CS_THR,        0xF1},
-  {CC1120_AGC_CFG1,          0x11},
-  {CC1120_AGC_CFG0,          0x90},
+  {CC1120_SYMBOL_RATE2,      0x99},
+  {CC1120_SYMBOL_RATE1,      0x99},
+  {CC1120_SYMBOL_RATE0,      0x99},
+  {CC1120_AGC_REF,           0x3C},
+  {CC1120_AGC_CS_THR,        0xEF},
+  {CC1120_AGC_CFG1,          0xA9},
+  {CC1120_AGC_CFG0,          0xC0},
   {CC1120_FIFO_CFG,          0x00},
   {CC1120_FS_CFG,            0x12},
-  {CC1120_PKT_CFG2,          0x24},
   {CC1120_PKT_CFG0,          0x20},
+  {CC1120_PA_CFG0,           0x79},
   {CC1120_PKT_LEN,           0xFF},
-  {CC1120_IF_MIX_CFG,        0x18},
-  {CC1120_TOC_CFG,           0x03},
-  {CC1120_MDMCFG2,           0x02},
-  {CC1120_FREQ2,             0x56},
-  {CC1120_FREQ1,             0xCC},
-  {CC1120_FREQ0,             0xCC},
-  {CC1120_IF_ADC1,           0xEE},
-  {CC1120_IF_ADC0,           0x10},
-  {CC1120_FS_DIG1,           0x04},
-  {CC1120_FS_DIG0,           0x50},
+  {CC1120_IF_MIX_CFG,        0x00},
+  {CC1120_TOC_CFG,           0x0A},
+  {CC1120_FREQ2,             0x6C},
+  {CC1120_FREQ1,             0x80},
+  {CC1120_FS_DIG1,           0x00},
+  {CC1120_FS_DIG0,           0x5F},
   {CC1120_FS_CAL1,           0x40},
   {CC1120_FS_CAL0,           0x0E},
   {CC1120_FS_DIVTWO,         0x03},
   {CC1120_FS_DSM0,           0x33},
-  {CC1120_FS_DVC1,           0xF7},
-  {CC1120_FS_DVC0,           0x0F},
-  {CC1120_FS_PFD,            0x00},
+  {CC1120_FS_DVC0,           0x17},
+  {CC1120_FS_PFD,            0x50},
   {CC1120_FS_PRE,            0x6E},
-  {CC1120_FS_REG_DIV_CML,    0x1C},
+  {CC1120_FS_REG_DIV_CML,    0x14},
   {CC1120_FS_SPARE,          0xAC},
-  {CC1120_FS_VCO0,           0xB5},
-  {CC1120_IFAMP,             0x05},
+  {CC1120_FS_VCO0,           0xB4},
   {CC1120_XOSC5,             0x0E},
   {CC1120_XOSC1,             0x03},
 };

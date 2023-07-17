@@ -909,6 +909,7 @@ send(const void *payload, unsigned short payload_len)
   int ret;
 
   INFO("RF: Send (%d)\n", payload_len);
+  printf("send cc\n");
 
   /* payload_len checked within prepare() */
   if((ret = prepare(payload, payload_len)) == RADIO_TX_OK) {
@@ -971,6 +972,7 @@ channel_clear(void)
 
   if(SPI_IS_LOCKED()) {
     /* Probably locked in rx interrupt. Return "channel occupied" */
+    //printf("channel occupied\n");
     return 0;
   }
 
@@ -981,6 +983,13 @@ channel_clear(void)
   }
 
   LOCK_SPI();
+
+  // if(state() == STATE_RX_FIFO_ERR) {
+	// 	/* Not in RX... */
+  //   //printf("IN STATE_RX_FIFO_ERR!\n");
+  //   idle();
+	// 	idle_calibrate_rx();
+	// }
 
   //#if STATE_USES_MARC_STATE
     RF_ASSERT(state() == STATE_RX);
@@ -1009,14 +1018,13 @@ channel_clear(void)
     }
 
     /* Wait for CARRIER_SENSE_VALID signal */
-    RTIMER_BUSYWAIT_UNTIL(((rssi0 = single_read(CC1120_RSSI0))
-                    & CC1120_CARRIER_SENSE_VALID),
-                   RTIMER_SECOND / 100);
+    RTIMER_BUSYWAIT_UNTIL(((rssi0 = single_read(CC1120_RSSI0)) & CC1120_CARRIER_SENSE_VALID),
+                   RTIMER_SECOND / 100); //charlie Wait for 5ms. 
     RF_ASSERT(rssi0 & CC1120_CARRIER_SENSE_VALID);
 
     if(rssi0 & CC1120_CARRIER_SENSE) {
       /* Channel occupied */
-      INFO("RF: CCA (0)\n");
+      INFO("RF: CCA (0) charlie\n");
       cca = 0;
     } else {
       /* Channel clear */
@@ -1123,6 +1131,7 @@ on(void)
     single_write(CC1120_IOCFG0, GPIO0_IOCFG);
 
     /* Turn on RX */
+    //strobe(CC1120_SFRX);
     idle_calibrate_rx();
 
     RELEASE_SPI();
@@ -1824,7 +1833,7 @@ state(void)
 #if STATE_USES_MARC_STATE
   return single_read(CC1120_MARCSTATE) & 0x1f;
 #else
-  printf("State:%x\n",strobe(CC1120_SNOP) & 0x70);
+  //printf("State:%x\n",strobe(CC1120_SNOP) & 0x70);
   return strobe(CC1120_SNOP) & 0x70;
 #endif
 
@@ -1900,7 +1909,7 @@ idle_calibrate_rx(void)
 #if !CC1120_AUTOCAL
   calibrate();
 #endif
-
+  //printf("cc\n");
   rf_flags &= ~RF_RX_PROCESSING_PKT;
   strobe(CC1120_SFRX);
   strobe(CC1120_SRX);

@@ -328,7 +328,7 @@
  * Maximum output power will propably depend on the band we use due to 
  * regulation issues 
  */
-#define CC1120_CONST_TX_POWER_MAX       14
+#define CC1120_CONST_TX_POWER_MAX       15
 /*---------------------------------------------------------------------------*/
 /* CCA threshold in dBm */
 #define CC1120_CONST_CCA_THRESHOLD_MIN  (-127)
