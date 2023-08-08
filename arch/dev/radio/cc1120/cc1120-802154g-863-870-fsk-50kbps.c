@@ -61,7 +61,7 @@
 /* The RSSI offset in dBm */
 #define RF_CFG_RSSI_OFFSET              (-102)  //-102
 /*---------------------------------------------------------------------------*/
-static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1 CHARLIE";
+static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1 Charlie";
 /*---------------------------------------------------------------------------*/
 
 /* 1 byte time: 160 usec */
@@ -114,19 +114,22 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
  * "trxEB RF Settings Performance Line".
  */
 
-// Modulation format = 2-GFSK
-// Whitening = false
-// Packet length = 255
-// Packet length mode = Variable
-// Packet bit length = 0
-// Symbol rate = 50
-// Deviation = 24.948120
-// Carrier frequency = 867.999878
-// Device address = 0
-// Manchester enable = false
-// Address config = No address check
-// Bit rate = 50
-// RX filter BW = 104.166667
+// Address Config = No address check 
+// Bit Rate = 50 
+// Carrier Frequency = 868.000000 
+// Deviation = 24.963379 
+// Device Address = 0 
+// Manchester Enable = false 
+// Modulation Format = 2-GFSK 
+// PA Ramping = true 
+// Packet Bit Length = 0 
+// Packet Length = 255 
+// Packet Length Mode = Variable 
+// Performance Mode = High Performance 
+// RX Filter BW = 100.000000 
+// Symbol rate = 50 
+// TX Power = 15 
+// Whitening = false 
 
 static const registerSetting_t preferredSettings[]= 
 {

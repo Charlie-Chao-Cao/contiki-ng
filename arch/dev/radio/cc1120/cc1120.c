@@ -810,6 +810,7 @@ transmit(unsigned short transmit_len)
 
   if(!(rf_flags & RF_ON)) {
     /* Radio is off - turn it on */
+    //printf("/* Radio is off - turn it on */\n");
     was_off = 1;
     on();
     /* Radio is in RX now (and calibrated...) */
@@ -858,11 +859,11 @@ transmit(unsigned short transmit_len)
   txret = idle_tx_rx(NULL, tx_pkt_len);
 #endif /* CC1120_WITH_TX_BUF */
   if(txret == RADIO_TX_OK) {
-
+    printf("TXOFF_MODE is set to RX\n");
     /*
      * TXOFF_MODE is set to RX,
      * let's wait until we are in RX and turn on the GPIO IRQs
-     * again as they were turned off in idle()
+     * again as they were turned off in idle()g
      */
 
     RTIMER_BUSYWAIT_UNTIL_STATE(STATE_RX,
@@ -871,7 +872,7 @@ transmit(unsigned short transmit_len)
     ENABLE_GPIO_INTERRUPTS();
 
   } else {
-
+    printf("Something went wrong during TX\n");
     /*
      * Something went wrong during TX, idle_tx_rx() returns in IDLE
      * state in this case.
@@ -896,7 +897,7 @@ transmit(unsigned short transmit_len)
 
   /* TX completed */
   rf_flags &= ~RF_TX_ACTIVE;
-
+  //printf("ret=%d(0)\n",ret);
   return ret;
 
 }
@@ -967,6 +968,7 @@ read(void *buf, unsigned short buf_len)
 static int
 channel_clear(void)
 {
+  //INFO("RF: channel_clear_CC\n");
 
   uint8_t cca, was_off = 0;
 
@@ -1092,6 +1094,7 @@ pending_packet(void)
   ret = ((rx_pkt_len != 0) ? 1 : 0);
   if(ret == 0 && !SPI_IS_LOCKED()) {
     LOCK_SPI();
+    //printf("check CC1120_NUM_RXBYTES\n");
     ret = (single_read(CC1120_NUM_RXBYTES) > 0);
     RELEASE_SPI();
   }
@@ -1931,7 +1934,7 @@ rx_rx(void)
   if(s == STATE_IDLE) {
     /* Proceed to rx */
   } else if(s == STATE_RX_FIFO_ERR) {
-    WARNING("RF: RX FIFO error!\n");
+    WARNING("RF: RX FIFO error! (rx)\n");
     strobe(CC1120_SFRX);
   } else if(s == STATE_TX_FIFO_ERR) {
     WARNING("RF: TX FIFO error!\n");
@@ -2330,7 +2333,7 @@ addr_check_auto_ack(uint8_t *frame, uint16_t frame_len)
 int
 cc1120_rx_interrupt(void)
 {
-
+  printf("cc1120_rx_interrupt\n");
   /* The radio's state */
   uint8_t s;
   /* The number of bytes in the RX FIFO waiting for read-out */

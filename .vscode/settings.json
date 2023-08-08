@@ -5,6 +5,8 @@
         "packetbuf.h": "c",
         "ioc.h": "c",
         "contiki.h": "c",
-        "cc1120-rf-cfg.h": "c"
+        "cc1120-rf-cfg.h": "c",
+        "routing.h": "c",
+        "random.h": "c"
     }
 }

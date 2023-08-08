@@ -48,7 +48,7 @@
 #ifdef CC1120_CONF_USE_GPIO2
 #define CC1120_USE_GPIO2                CC1120_CONF_USE_GPIO2
 #else
-#define CC1120_USE_GPIO2                1
+#define CC1120_USE_GPIO2                1 //charlie
 #endif
 /*---------------------------------------------------------------------------*/
 /*
