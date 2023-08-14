@@ -46,33 +46,13 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include "sys/log.h"
-static struct simple_udp_connection udp_conn;
-static char str[32]="OK";
-#define UDP_CLIENT_PORT	8765
-#define UDP_SERVER_PORT	5678
+
 
 #include <stdio.h> /* For printf() */
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
 
-/*---------------------------------------------------------------------------*/
-static void
-udp_rx_callback(struct simple_udp_connection *c,
-         const uip_ipaddr_t *sender_addr,
-         uint16_t sender_port,
-         const uip_ipaddr_t *receiver_addr,
-         uint16_t receiver_port,
-         const uint8_t *data,
-         uint16_t datalen)
-{
-
-  printf("Received response '%.*s' from ", datalen, (char *) data);
-  //LOG_INFO_6ADDR(sender_addr);
-
-  printf("\n");
-
-}
 
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(hello_world_process, ev, data)
@@ -84,11 +64,8 @@ PROCESS_THREAD(hello_world_process, ev, data)
   /* Setup a periodic timer that expires after 10 seconds. */
   etimer_set(&timer, CLOCK_SECOND * 10);
   printf("Hello, world\n");
-  simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL,
-                      UDP_SERVER_PORT, udp_rx_callback);
+
   while(1) {
-    
-    simple_udp_send(&udp_conn,str,strlen(str));
 
     /* Wait for the periodic timer to expire and then restart the timer. */
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
