@@ -37,6 +37,9 @@
 
 #include "contiki.h"
 
+// #define CC1120_CONF_802154G 1
+
+
 /*---------------------------------------------------------------------------*/
 /*
  * Can we use GPIO2 (in addition to GPIO0)?
@@ -48,7 +51,7 @@
 #ifdef CC1120_CONF_USE_GPIO2
 #define CC1120_USE_GPIO2                CC1120_CONF_USE_GPIO2
 #else
-#define CC1120_USE_GPIO2                1 //charlie
+#define CC1120_USE_GPIO2                1
 #endif
 /*---------------------------------------------------------------------------*/
 /*
@@ -122,7 +125,7 @@
 #endif
 /*---------------------------------------------------------------------------*/
 /*
- * The frequency offset
+ * The frequency 
  *
  * Might be hardware dependent (e.g. depending on crystal load capacitances),
  * so we make it a configuration parameter. Written to FREQOFF1 / FREQOFF2.
@@ -147,7 +150,7 @@
 #define CC1120_DEFAULT_CHANNEL          CC1120_CONF_DEFAULT_CHANNEL
 #else
 /* 868.325 MHz */
-#define CC1120_DEFAULT_CHANNEL          26
+#define CC1120_DEFAULT_CHANNEL          40
 #endif
 /*---------------------------------------------------------------------------*/
 /*

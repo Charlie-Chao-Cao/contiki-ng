@@ -49,7 +49,7 @@
 /* Base frequency in kHz */
 #define RF_CFG_CHAN_CENTER_F0           868000
 /* Channel spacing in Hz */
-#define RF_CFG_CHAN_SPACING             200000
+#define RF_CFG_CHAN_SPACING             125000
 /* The minimum channel */
 #define RF_CFG_MIN_CHANNEL              0
 /* The maximum channel */
@@ -131,6 +131,7 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
 // TX Power = 15 
 // Whitening = false 
 
+
 static const registerSetting_t preferredSettings[]= 
 {
   {CC1120_IOCFG3,            0xB0},
@@ -165,8 +166,8 @@ static const registerSetting_t preferredSettings[]=
   {CC1120_PKT_LEN,           0xFF},
   {CC1120_IF_MIX_CFG,        0x00},
   {CC1120_TOC_CFG,           0x0A},
-  {CC1120_FREQ2,             0x6C},
-  {CC1120_FREQ1,             0x80},
+  {CC1120_FREQ2,             0x6B},
+  {CC1120_FREQ1,             0xE0},
   {CC1120_FS_DIG1,           0x00},
   {CC1120_FS_DIG0,           0x5F},
   {CC1120_FS_CAL1,           0x40},
@@ -203,6 +204,7 @@ const cc1120_rf_cfg_t cc1120_802154g_863_870_fsk_50kbps = {
   .cca_threshold = RF_CFG_CCA_THRESHOLD,
   .rssi_offset = RF_CFG_RSSI_OFFSET,
   .bitrate = 50000,
-  .tsch_timing = cc1120_50kbps_tsch_timing,
+  .tsch_timing = NULL,
+  //.tsch_timing = cc1120_50kbps_tsch_timing,
 };
 /*---------------------------------------------------------------------------*/

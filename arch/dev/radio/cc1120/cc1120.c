@@ -214,7 +214,7 @@ extern const cc1120_rf_cfg_t CC1120_RF_CFG;
 #define LO_DIVIDER                      4
 #if (XTAL_FREQ_KHZ == 40000) && (LO_DIVIDER == 4)
 #define FREQ_DIVIDER                    625
-#define FREQ_MULTIPLIER                 4096
+#define FREQ_MULTIPLIER                 1024
 #else
 #error Invalid settings for frequency calculation
 #endif
@@ -677,6 +677,12 @@ init(void)
     /* Write initial configuration */
     configure();
 
+    //charlie
+    // printf("CC1120_FREQ:%x %x %x\n",single_read(CC1120_FREQ2),single_read(CC1120_FREQ1),single_read(CC1120_FREQ0));
+    // radio_value_t temp;
+    // printf("get RADIO_PARAM_CHANNEL? %d\n ",get_value(RADIO_PARAM_CHANNEL, &temp));
+    // printf("channel:%d, calculate_freq:%lu\n",temp,calculate_freq(temp));
+
     /* Enable address filtering + auto ack */
     rx_mode_value = (RADIO_RX_MODE_AUTOACK | RADIO_RX_MODE_ADDRESS_FILTER);
 
@@ -699,7 +705,7 @@ init(void)
     RELEASE_SPI();
 
     /* Set default channel. This will also force initial calibration! */
-    set_channel(CC1120_DEFAULT_CHANNEL);
+    set_channel(CC1120_DEFAULT_CHANNEL); //charlie
 
     /*
      * We have to call off() before on() because on() relies on the
@@ -730,6 +736,12 @@ prepare(const void *payload, unsigned short payload_len)
 #if CC1120_WITH_TX_BUF
   /* Copy payload to buffer, will be sent later */
   memcpy(tx_pkt, payload, tx_pkt_len);
+  for(int i=0;i<tx_pkt_len;i++)
+  {
+    printf("%X",tx_pkt[i]);
+  }
+  printf("\n");
+  
 #else /* CC1120_WITH_TX_BUF */
 #if (CC1120_MAX_PAYLOAD_LEN > (CC1120_FIFO_SIZE - PHR_LEN))
 #error CC1120 max payload too large
@@ -781,9 +793,18 @@ copy_header_to_tx_fifo(unsigned short payload_len)
 #if CC1120_802154G
   /* Write PHR */
   burst_write(CC1120_TXFIFO, (uint8_t *)&phr, PHR_LEN);
+  //printf("\t%d bytes in fifo (%d + length byte requested)\n", single_read(CC1120_NUM_TXBYTES), PHR_LEN);
 #else
   /* Write length byte */
-  burst_write(CC1120_TXFIFO, (uint8_t *)&payload_len, PHR_LEN);
+  // uint8_t received_data[128]; // 用于存储读取的数据  charlie
+  // burst_read(CC1120_TXFIFO, received_data, sizeof(received_data));  //charlie
+  // printf("copy_header_to_tx_fifo\nCC1120_TXFIFO:%s\n",received_data);
+
+  burst_write(CC1120_TXFIFO, (uint8_t *)&payload_len, PHR_LEN); 
+
+  // //uint8_t received_data[128]; // 用于存储读取的数据  charlie
+  // burst_read(CC1120_TXFIFO, received_data, sizeof(received_data));  //charlie
+  // printf("burst_write:CC1120_TXFIFO:%s\n",received_data);
 #endif /* #if CC1120_802154G */
 
   return 0;
@@ -817,9 +838,11 @@ transmit(unsigned short transmit_len)
   }
 
   if(tx_mode_value & RADIO_TX_MODE_SEND_ON_CCA) {
+    //printf("/* Perform clear channel assessment */\n");
     /* Perform clear channel assessment */
     if(!channel_clear()) {
       /* Channel occupied */
+      //printf("/* Channel occupied */\n");
       if(was_off) {
         off();
       }
@@ -842,6 +865,7 @@ transmit(unsigned short transmit_len)
 
   /* Update output power */
   if(new_txpower != txpower) {
+    //printf("update_txpower(new_txpower)\n");
     update_txpower(new_txpower);
   }
 
@@ -851,15 +875,16 @@ transmit(unsigned short transmit_len)
     calibrate();
   }
 #endif
-
+  
   /* Send data using TX FIFO */
 #if CC1120_WITH_TX_BUF
   txret = idle_tx_rx(tx_pkt, tx_pkt_len);
+  printf("state:%X after idle_tx_rx\n",state());
 #else /* CC1120_WITH_TX_BUF */
   txret = idle_tx_rx(NULL, tx_pkt_len);
 #endif /* CC1120_WITH_TX_BUF */
   if(txret == RADIO_TX_OK) {
-    printf("TXOFF_MODE is set to RX\n");
+    //printf("TXOFF_MODE is set to RX\n");
     /*
      * TXOFF_MODE is set to RX,
      * let's wait until we are in RX and turn on the GPIO IRQs
@@ -869,10 +894,11 @@ transmit(unsigned short transmit_len)
     RTIMER_BUSYWAIT_UNTIL_STATE(STATE_RX,
         CC1120_RF_CFG.tx_rx_turnaround);
 
+    printf("state:%X TXOFF_MODE is set to RX\n",state());
     ENABLE_GPIO_INTERRUPTS();
 
   } else {
-    printf("Something went wrong during TX\n");
+    //printf("Something went wrong during TX\n");
     /*
      * Something went wrong during TX, idle_tx_rx() returns in IDLE
      * state in this case.
@@ -910,7 +936,6 @@ send(const void *payload, unsigned short payload_len)
   int ret;
 
   INFO("RF: Send (%d)\n", payload_len);
-  printf("send cc\n");
 
   /* payload_len checked within prepare() */
   if((ret = prepare(payload, payload_len)) == RADIO_TX_OK) {
@@ -1526,7 +1551,7 @@ reset(void)
 
 }
 /*---------------------------------------------------------------------------*/
-/* Write a single byte to the specified address. */
+/* Write a single byte to the specified address. 将单个字节写入指定地址*/
 static uint8_t
 single_write(uint16_t addr, uint8_t val)
 {
@@ -1961,6 +1986,7 @@ rx_rx(void)
 static int
 idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
 {
+  printf("state:%x idle_tx_rx()\n",state());
 #if (CC1120_MAX_PAYLOAD_LEN > (CC1120_FIFO_SIZE - PHR_LEN))
   uint8_t to_write;
   const uint8_t *p;
@@ -1968,7 +1994,7 @@ idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
 
   /* Prepare for RX */
   rf_flags &= ~RF_RX_PROCESSING_PKT;
-  strobe(CC1120_SFRX);
+  strobe(CC1120_SFRX);  //CC1120_SFRX: Flush the RX FIFO. Only issue SFRX in IDLE or RX_FIFO_ERR states
 
   /* Configure GPIO0 to detect TX state */
   single_write(CC1120_IOCFG0, CC1120_IOCFG_MARC_2PIN_STATUS_0);
@@ -1991,19 +2017,33 @@ idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
   p = payload + to_write;
 #else
   burst_write(CC1120_TXFIFO, payload, payload_len);
+  printf("\t%d bytes in fifo (%d + length byte requested)\n", single_read(CC1120_NUM_TXBYTES), payload_len);
+  // uint8_t received_data[128]; // 用于存储读取的数据  charlie
+  // burst_read(CC1120_TXFIFO, received_data, sizeof(received_data));  //charlie
+  // printf("final: CC1120_TXFIFO:%s\n",received_data);
 #endif
 #endif /* CC1120_WITH_TX_BUF */
 
+  //printf("CC1120_FREQ:%x %x %x\n",single_read(CC1120_FREQ2),single_read(CC1120_FREQ1),single_read(CC1120_FREQ0));
+
 #if USE_SFSTXON
   /* Wait for synthesizer to be ready */
-  RTIMER_BUSYWAIT_UNTIL_STATE(STATE_FSTXON, RTIMER_SECOND / 100);
+  RTIMER_BUSYWAIT_UNTIL_STATE(STATE_FSTXON, RTIMER_SECOND / 10); //charlie was 100
+  printf("state:%x(011)\n",state());
+  
 #endif
+  //charlie
+  //printf("CC1120_FREQ:%x %x %x\n",single_read(CC1120_FREQ2),single_read(CC1120_FREQ1),single_read(CC1120_FREQ0));
+  //radio_value_t temp;
+  //printf("get RADIO_PARAM_CHANNEL? %d\n ",get_value(RADIO_PARAM_CHANNEL, &temp));
+  //printf("channel:%d, calculate_freq:%lu\n",temp,calculate_freq(temp));
 
   /* Start TX */
   strobe(CC1120_STX);
 
   /* Wait for TX to start. */
   RTIMER_BUSYWAIT_UNTIL((cc1120_arch_gpio0_read_pin() == 1), RTIMER_SECOND / 100);
+  printf("state:%x(010)\n",state());
 
   /* Turned off at the latest in idle() */
   TX_LEDS_ON();
@@ -2019,7 +2059,7 @@ idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
      * in case we missed the rising edge of the GPIO signal
      */
 
-    ERROR("RF: TX doesn't start!\n");
+    ERROR("RF: TX doesn't start! TX didn't start in time.\n");
 #if (CC1120_MAX_PAYLOAD_LEN > (CC1120_FIFO_SIZE - PHR_LEN))
     single_write(CC1120_IOCFG2, GPIO2_IOCFG);
 #endif
@@ -2154,9 +2194,14 @@ calculate_freq(uint8_t channel)
 
   uint32_t freq;
 
-  freq = CC1120_RF_CFG.chan_center_freq0 + (channel * CC1120_RF_CFG.chan_spacing) / 1000 /* /1000 because chan_spacing is in Hz */;
-  freq *= FREQ_MULTIPLIER;
-  freq /= FREQ_DIVIDER;
+  // freq = CC1120_RF_CFG.chan_center_freq0 + (channel * CC1120_RF_CFG.chan_spacing) / 1000 /* /1000 because chan_spacing is in Hz */;
+  // freq *= FREQ_MULTIPLIER;
+  // freq /= FREQ_DIVIDER;
+
+  //charlie
+  freq = FREQ_MULTIPLIER;
+	freq *= channel;
+	freq += 0x6BE000;
 
   return freq;
 
@@ -2234,6 +2279,8 @@ set_channel(uint8_t channel)
   if(was_off) {
     off();
   }
+
+  printf("CC1120_FREQ:%x %x %x\n",single_read(CC1120_FREQ2),single_read(CC1120_FREQ1),single_read(CC1120_FREQ0)); //charlie
 
   return CHANNEL_UPDATE_SUCCEEDED;
 
@@ -2333,7 +2380,7 @@ addr_check_auto_ack(uint8_t *frame, uint16_t frame_len)
 int
 cc1120_rx_interrupt(void)
 {
-  printf("cc1120_rx_interrupt\n");
+  //printf("cc1120_rx_interrupt\n");
   /* The radio's state */
   uint8_t s;
   /* The number of bytes in the RX FIFO waiting for read-out */
@@ -2510,6 +2557,12 @@ cc1120_rx_interrupt(void)
     burst_read(CC1120_RXFIFO,
                &buf[bytes_read],
                num_rxbytes);
+
+    // for(int i=0;i<num_rxbytes;i++)  //charlie
+    //     {
+    //         printf("%X",buf[i]);
+    //     }
+    //     printf("\n");
 
     bytes_read += num_rxbytes;
     num_rxbytes = 0;
