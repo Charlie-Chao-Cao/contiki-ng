@@ -47,21 +47,21 @@
  */
 
 /* Base frequency in kHz */
-#define RF_CFG_CHAN_CENTER_F0           0x6BE000
+#define RF_CFG_CHAN_CENTER_F0           0x69E100  //169.40625MHz
 /* Channel spacing in Hz */
-#define RF_CFG_CHAN_SPACING             0x400
+#define RF_CFG_CHAN_SPACING             0x200 //Channel spacing 0.0125MHz
 /* The minimum channel */
 #define RF_CFG_MIN_CHANNEL              0
 /* The maximum channel */
-#define RF_CFG_MAX_CHANNEL              49  //49
+#define RF_CFG_MAX_CHANNEL              5  
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1120_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
-#define RF_CFG_CCA_THRESHOLD            (-100)  //-100
+#define RF_CFG_CCA_THRESHOLD            (-80)  //-100
 /* The RSSI offset in dBm */
 #define RF_CFG_RSSI_OFFSET              (-102)  //-102
 /*---------------------------------------------------------------------------*/
-static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1 Charlie";
+static const char rf_cfg_descriptor[] = "802.15.4g 169MHz 4-FSK mode #3 Charlie";
 /*---------------------------------------------------------------------------*/
 
 /* 1 byte time: 160 usec */
@@ -115,9 +115,9 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
  */
 
 // Address Config = No address check 
-// Bit Rate = 50 
-// Carrier Frequency = 868.000000 
-// Deviation = 24.963379 
+// Bit Rate = 9.6 
+// Carrier Frequency = 169.406250 
+// Deviation = 3.997803 
 // Device Address = 0 
 // Manchester Enable = false 
 // Modulation Format = 2-GFSK 
@@ -127,10 +127,9 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
 // Packet Length Mode = Variable 
 // Performance Mode = High Performance 
 // RX Filter BW = 100.000000 
-// Symbol rate = 50 
+// Symbol rate = 9.6 
 // TX Power = 15 
 // Whitening = false 
-
 
 static const registerSetting_t preferredSettings[]= 
 {
@@ -144,30 +143,27 @@ static const registerSetting_t preferredSettings[]=
   {CC1120_SYNC0,             0x0E},
   {CC1120_SYNC_CFG1,         0x08},
   {CC1120_SYNC_CFG0,         0x0B},
-  {CC1120_DEVIATION_M,       0x99},
-  {CC1120_MODCFG_DEV_E,      0x0D},
+  {CC1120_MODCFG_DEV_E,      0x0B},
   {CC1120_DCFILT_CFG,        0x15},
   {CC1120_PREAMBLE_CFG1,     0x18},
   {CC1120_FREQ_IF_CFG,       0x3A},
   {CC1120_IQIC,              0x00},
   {CC1120_CHAN_BW,           0x02},
   {CC1120_MDMCFG0,           0x05},
-  {CC1120_SYMBOL_RATE2,      0x99},
-  {CC1120_SYMBOL_RATE1,      0x99},
-  {CC1120_SYMBOL_RATE0,      0x99},
+  {CC1120_SYMBOL_RATE2,      0x73},
   {CC1120_AGC_REF,           0x3C},
   {CC1120_AGC_CS_THR,        0xEF},
   {CC1120_AGC_CFG1,          0xA9},
   {CC1120_AGC_CFG0,          0xC0},
   {CC1120_FIFO_CFG,          0x00},
-  {CC1120_FS_CFG,            0x12},
+  {CC1120_FS_CFG,            0x1A},
   {CC1120_PKT_CFG0,          0x20},
-  {CC1120_PA_CFG0,           0x79},
+  {CC1120_PA_CFG0,           0x7D},
   {CC1120_PKT_LEN,           0xFF},
   {CC1120_IF_MIX_CFG,        0x00},
   {CC1120_TOC_CFG,           0x0A},
-  {CC1120_FREQ2,             0x6B},
-  {CC1120_FREQ1,             0xE0},
+  {CC1120_FREQ2,             0x69},
+  {CC1120_FREQ1,             0xE1},
   {CC1120_FS_DIG1,           0x00},
   {CC1120_FS_DIG0,           0x5F},
   {CC1120_FS_CAL1,           0x40},
@@ -185,11 +181,11 @@ static const registerSetting_t preferredSettings[]=
 };
 /*---------------------------------------------------------------------------*/
 /* Global linkage: symbol name must be different in each exported file! */
-const cc1120_rf_cfg_t cc1120_802154g_863_870_fsk_50kbps = {
+const cc1120_rf_cfg_t cc1120_802154g_169_4fsk_9_6kbps = {
   .cfg_descriptor = rf_cfg_descriptor,
   .register_settings = preferredSettings,
   .size_of_register_settings = sizeof(preferredSettings),
-  .tx_pkt_lifetime = (RTIMER_SECOND / 20),
+  .tx_pkt_lifetime = (RTIMER_SECOND / 5),
   .tx_rx_turnaround = (RTIMER_SECOND / 100),
   /* Includes 3 Bytes preamble + 2 Bytes SFD, at 160usec per byte = 800 usec */
   /* Includes time to completion of "Wait for TX to start" if cc1120.c: 397 usec */
@@ -203,7 +199,7 @@ const cc1120_rf_cfg_t cc1120_802154g_863_870_fsk_50kbps = {
   .max_txpower = RF_CFG_MAX_TXPOWER,
   .cca_threshold = RF_CFG_CCA_THRESHOLD,
   .rssi_offset = RF_CFG_RSSI_OFFSET,
-  .bitrate = 50000,
+  .bitrate = 9600,
   .tsch_timing = NULL,
   //.tsch_timing = cc1120_50kbps_tsch_timing,
 };

@@ -37,9 +37,6 @@
 
 #include "contiki.h"
 
-// #define CC1120_CONF_802154G 1
-
-
 /*---------------------------------------------------------------------------*/
 /*
  * Can we use GPIO2 (in addition to GPIO0)?
@@ -121,7 +118,8 @@
 #ifdef CC1120_CONF_RF_CFG
 #define CC1120_RF_CFG                   CC1120_CONF_RF_CFG
 #else
-#define CC1120_RF_CFG                   cc1120_802154g_863_870_fsk_50kbps
+#define CC1120_RF_CFG                   cc1120_802154g_863_870_fsk_50kbps   //868MHz
+//#define CC1120_RF_CFG                   cc1120_802154g_169_4fsk_9_6kbps     //169MHz
 #endif
 /*---------------------------------------------------------------------------*/
 /*
@@ -150,7 +148,9 @@
 #define CC1120_DEFAULT_CHANNEL          CC1120_CONF_DEFAULT_CHANNEL
 #else
 /* 868.325 MHz */
-#define CC1120_DEFAULT_CHANNEL          40
+//#define CC1120_DEFAULT_CHANNEL          40
+/* 169.40625 MHz */
+#define CC1120_DEFAULT_CHANNEL          3
 #endif
 /*---------------------------------------------------------------------------*/
 /*

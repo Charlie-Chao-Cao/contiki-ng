@@ -127,8 +127,21 @@ uint16_t *radio_tsch_timeslot_timing(void);
 #define CSMA_CONF_AFTER_ACK_DETECTED_WAIT_TIME        (RTIMER_SECOND / 1500)
 
 #ifndef CC1120_CONF_RF_CFG
-#define CC1120_CONF_RF_CFG                   cc1120_802154g_863_870_fsk_50kbps
+//#define CC1120_CONF_RF_CFG                  cc1120_802154g_863_870_fsk_50kbps   //868MHz
+#define CC1120_CONF_RF_CFG                  cc1120_802154g_169_4fsk_9_6kbps     //169MHz
 #endif
+
+/* charlie
+ * You will need to configure the defines below to match the configuration of
+ * your sub-ghz network. 
+ */
+#define CC1200_CONF_USE_GPIO2         0
+#define CC1200_CONF_USE_RX_WATCHDOG   0
+#define CC1200_CONF_802154G           0
+#define CC1200_CONF_802154G_CRC16     0
+#define CC1200_CONF_802154G_WHITENING 0
+#define ANTENNA_SW_SELECT_DEF_CONF    ANTENNA_SW_SELECT_SUBGHZ
+/*---------------------------------------------------------------------------*/
 #endif
 
 

@@ -76,7 +76,7 @@ typedef struct cc1120_rf_cfg {
   rtimer_clock_t delay_before_rx;
   /* Delay between the SFD finishes arriving and it is detected in software */
   rtimer_clock_t delay_before_detect;
-  /* Base frequency in kHz */
+  /* Base frequency in FREQ */
   uint32_t chan_center_freq0;
   /* Channel spacing in Hz */
   uint32_t chan_spacing;

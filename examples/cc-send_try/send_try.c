@@ -47,7 +47,7 @@
 #include <inttypes.h>
 #include "sys/log.h"
 static struct simple_udp_connection udp_conn;
-//static char str[32]="OK";
+static char *str="1234";
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
 
@@ -90,7 +90,8 @@ PROCESS_THREAD(hello_world_process, ev, data)
     
     //simple_udp_send(&udp_conn,str,strlen(str));
     
-    printf("%d\n",NETSTACK_RADIO.send("1234",strlen("1234")));
+    int n=NETSTACK_RADIO.send(str,strlen(str));
+    printf("send:1234\t%d\n\n\n",n);
 
     /* Wait for the periodic timer to expire and then restart the timer. */
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
