@@ -47,7 +47,7 @@
  */
 
 /* Base frequency in kHz */
-#define RF_CFG_CHAN_CENTER_F0           0x6BE000
+#define RF_CFG_CHAN_CENTER_F0           0x6C8000  //0x6BE000
 /* Channel spacing in Hz */
 #define RF_CFG_CHAN_SPACING             0x400
 /* The minimum channel */
@@ -57,7 +57,7 @@
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1120_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
-#define RF_CFG_CCA_THRESHOLD            (-100)  //-100
+#define RF_CFG_CCA_THRESHOLD            (-90)  //-100
 /* The RSSI offset in dBm */
 #define RF_CFG_RSSI_OFFSET              (-102)  //-102
 /*---------------------------------------------------------------------------*/
@@ -204,7 +204,6 @@ const cc1120_rf_cfg_t cc1120_802154g_863_870_fsk_50kbps = {
   .cca_threshold = RF_CFG_CCA_THRESHOLD,
   .rssi_offset = RF_CFG_RSSI_OFFSET,
   .bitrate = 50000,
-  .tsch_timing = NULL,
-  //.tsch_timing = cc1120_50kbps_tsch_timing,
+  .tsch_timing = cc1120_50kbps_tsch_timing,
 };
 /*---------------------------------------------------------------------------*/

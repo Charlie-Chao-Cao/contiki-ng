@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = send_try
+CONTIKI_PROJECT = send_try server_try
 all: $(CONTIKI_PROJECT)
 
 #TARGET = cc2538dk

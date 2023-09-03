@@ -3,6 +3,12 @@ all: $(CONTIKI_PROJECT)
 
 PLATFORMS_EXCLUDE = sky nrf52dk native
 
+TARGET = zoul
+RADIO = cc1120
+DEFINES=ZOUL_CONF_USE_CC1120_RADIO=1
+
+MODULES += os/services/shell
+
 CONTIKI=../../..
 
  # force Orchestra from command line

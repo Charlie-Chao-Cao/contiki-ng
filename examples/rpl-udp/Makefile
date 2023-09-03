@@ -3,7 +3,7 @@ all: $(CONTIKI_PROJECT)
 
 #TARGET = cc2538dk
 TARGET = zoul
-BOARD=firefly-reva
+#BOARD=firefly-reva
 #BOARD = muntjac
 RADIO = cc1120
 DEFINES=ZOUL_CONF_USE_CC1120_RADIO=1

@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2006, Swedish Institute of Computer Science.
- * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -30,36 +27,23 @@
  *
  */
 
-/**
- * \file
- *         A very simple Contiki application showing how Contiki programs look
- * \author
- *         Adam Dunkels <adam@sics.se>
- */
-
-#include "contiki.h"
-
 #include "contiki.h"
 #include "net/routing/routing.h"
 #include "net/netstack.h"
 #include "net/ipv6/simple-udp.h"
-#include <stdint.h>
-#include <inttypes.h>
-#include "sys/log.h"
 
+#include "sys/log.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-static struct simple_udp_connection udp_conn;
-//static char *str="1234";
+#define WITH_SERVER_REPLY  1
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
 
-#include <stdio.h> /* For printf() */
-/*---------------------------------------------------------------------------*/
-PROCESS(hello_world_process, "Hello world process");
-AUTOSTART_PROCESSES(&hello_world_process);
+static struct simple_udp_connection udp_conn;
 
+PROCESS(udp_server_process, "UDP server");
+AUTOSTART_PROCESSES(&udp_server_process);
 /*---------------------------------------------------------------------------*/
 static void
 udp_rx_callback(struct simple_udp_connection *c,
@@ -70,39 +54,25 @@ udp_rx_callback(struct simple_udp_connection *c,
          const uint8_t *data,
          uint16_t datalen)
 {
-
-  printf("Received response '%.*s' from ", datalen, (char *) data);
+  LOG_INFO("Received request '%.*s' from ", datalen, (char *) data);
   LOG_INFO_6ADDR(sender_addr);
-
-  printf("\n");
-
+  LOG_INFO_("\n");
+#if WITH_SERVER_REPLY
+  /* send back the same string to the client as an echo reply */
+  LOG_INFO("Sending response.\n");
+  simple_udp_sendto(&udp_conn, data, datalen, sender_addr);
+#endif /* WITH_SERVER_REPLY */
 }
-
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(hello_world_process, ev, data)
+PROCESS_THREAD(udp_server_process, ev, data)
 {
-  static struct etimer timer;
-
   PROCESS_BEGIN();
 
-  /* Setup a periodic timer that expires after 10 seconds. */
-  etimer_set(&timer, CLOCK_SECOND * 1);
-  printf("Hello, world\n");
-  static char str[32];
-  int i=0;
-  simple_udp_register(&udp_conn,UDP_CLIENT_PORT , NULL, UDP_SERVER_PORT, udp_rx_callback);     
-                      
-  while(1) {
-    snprintf(str, sizeof(str), "hello %d", i++);
-    simple_udp_send(&udp_conn,str,strlen(str));
+  /* Initialize DAG root */
+  NETSTACK_ROUTING.root_start();
 
-    //int n=NETSTACK_RADIO.send(str,strlen(str));
-    //printf("send:1234\t%d\n\n\n",n);
-
-    /* Wait for the periodic timer to expire and then restart the timer. */
-    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-    etimer_reset(&timer);
-  }
+  /* Initialize UDP connection */
+  simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL,UDP_SERVER_PORT, udp_rx_callback);
 
   PROCESS_END();
 }

@@ -57,7 +57,7 @@
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1120_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
-#define RF_CFG_CCA_THRESHOLD            (-80)  //-100
+#define RF_CFG_CCA_THRESHOLD            (-90)  //-100
 /* The RSSI offset in dBm */
 #define RF_CFG_RSSI_OFFSET              (-102)  //-102
 /*---------------------------------------------------------------------------*/
@@ -120,14 +120,14 @@ static const tsch_timeslot_timing_usec cc1120_50kbps_tsch_timing = {
 // Deviation = 3.997803 
 // Device Address = 0 
 // Manchester Enable = false 
-// Modulation Format = 2-GFSK 
+// Modulation Format = 4-FSK 
 // PA Ramping = true 
 // Packet Bit Length = 0 
 // Packet Length = 255 
 // Packet Length Mode = Variable 
 // Performance Mode = High Performance 
 // RX Filter BW = 100.000000 
-// Symbol rate = 9.6 
+// Symbol rate = 4.8 
 // TX Power = 15 
 // Whitening = false 
 
@@ -141,16 +141,16 @@ static const registerSetting_t preferredSettings[]=
   {CC1120_SYNC2,             0x55},
   {CC1120_SYNC1,             0x7A},
   {CC1120_SYNC0,             0x0E},
-  {CC1120_SYNC_CFG1,         0x08},
+  {CC1120_SYNC_CFG1,         0x0B},
   {CC1120_SYNC_CFG0,         0x0B},
-  {CC1120_MODCFG_DEV_E,      0x0B},
+  {CC1120_MODCFG_DEV_E,      0x23},
   {CC1120_DCFILT_CFG,        0x15},
   {CC1120_PREAMBLE_CFG1,     0x18},
   {CC1120_FREQ_IF_CFG,       0x3A},
   {CC1120_IQIC,              0x00},
   {CC1120_CHAN_BW,           0x02},
   {CC1120_MDMCFG0,           0x05},
-  {CC1120_SYMBOL_RATE2,      0x73},
+  {CC1120_SYMBOL_RATE2,      0x63},
   {CC1120_AGC_REF,           0x3C},
   {CC1120_AGC_CS_THR,        0xEF},
   {CC1120_AGC_CFG1,          0xA9},
@@ -158,7 +158,7 @@ static const registerSetting_t preferredSettings[]=
   {CC1120_FIFO_CFG,          0x00},
   {CC1120_FS_CFG,            0x1A},
   {CC1120_PKT_CFG0,          0x20},
-  {CC1120_PA_CFG0,           0x7D},
+  {CC1120_PA_CFG0,           0x7E},
   {CC1120_PKT_LEN,           0xFF},
   {CC1120_IF_MIX_CFG,        0x00},
   {CC1120_TOC_CFG,           0x0A},
@@ -185,8 +185,8 @@ const cc1120_rf_cfg_t cc1120_802154g_169_4fsk_9_6kbps = {
   .cfg_descriptor = rf_cfg_descriptor,
   .register_settings = preferredSettings,
   .size_of_register_settings = sizeof(preferredSettings),
-  .tx_pkt_lifetime = (RTIMER_SECOND / 5),
-  .tx_rx_turnaround = (RTIMER_SECOND / 100),
+  .tx_pkt_lifetime = (RTIMER_SECOND / 5),   //was 20
+  .tx_rx_turnaround = (RTIMER_SECOND / 100),  //was 100
   /* Includes 3 Bytes preamble + 2 Bytes SFD, at 160usec per byte = 800 usec */
   /* Includes time to completion of "Wait for TX to start" if cc1120.c: 397 usec */
   .delay_before_tx = ((unsigned)US_TO_RTIMERTICKS(800 + 397 + 423)),
@@ -200,7 +200,6 @@ const cc1120_rf_cfg_t cc1120_802154g_169_4fsk_9_6kbps = {
   .cca_threshold = RF_CFG_CCA_THRESHOLD,
   .rssi_offset = RF_CFG_RSSI_OFFSET,
   .bitrate = 9600,
-  .tsch_timing = NULL,
-  //.tsch_timing = cc1120_50kbps_tsch_timing,
+  .tsch_timing = cc1120_50kbps_tsch_timing,
 };
 /*---------------------------------------------------------------------------*/

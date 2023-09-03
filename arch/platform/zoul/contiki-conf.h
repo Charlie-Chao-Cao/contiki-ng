@@ -127,8 +127,8 @@ uint16_t *radio_tsch_timeslot_timing(void);
 #define CSMA_CONF_AFTER_ACK_DETECTED_WAIT_TIME        (RTIMER_SECOND / 1500)
 
 #ifndef CC1120_CONF_RF_CFG
-//#define CC1120_CONF_RF_CFG                  cc1120_802154g_863_870_fsk_50kbps   //868MHz
-#define CC1120_CONF_RF_CFG                  cc1120_802154g_169_4fsk_9_6kbps     //169MHz
+#define CC1120_CONF_RF_CFG                  cc1120_802154g_863_870_fsk_50kbps   //868MHz
+//#define CC1120_CONF_RF_CFG                  cc1120_802154g_169_4fsk_9_6kbps     //169MHz
 #endif
 
 /* charlie

@@ -1,6 +1,12 @@
 CONTIKI_PROJECT = node
 all: $(CONTIKI_PROJECT)
 
+TARGET = zoul
+RADIO = cc1120
+DEFINES=ZOUL_CONF_USE_CC1120_RADIO=1
+
+MODULES += os/services/shell
+
 CONTIKI=../../..
 
 PLATFORMS_EXCLUDE = sky nrf52dk native
